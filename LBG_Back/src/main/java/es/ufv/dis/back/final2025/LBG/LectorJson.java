@@ -11,7 +11,7 @@ public class LectorJson {
     public ArrayList<Usuario> leeFicheroJson(){
         try {
             BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(getClass().getClassLoader().getResourceAsStream("src/main/resources/usuarios.json"))
+                    new InputStreamReader(getClass().getClassLoader().getResourceAsStream("usuarios.json"))
             );
             ArrayList<Usuario> listaUsuario = new Gson().fromJson(reader, new TypeToken<ArrayList<Usuario>>() {}.getType());
             reader.close();
