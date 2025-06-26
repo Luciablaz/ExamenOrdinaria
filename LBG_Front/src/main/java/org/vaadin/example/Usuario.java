@@ -2,24 +2,23 @@ package org.vaadin.example;
 import java.util.List;
 
 public class Usuario {
-
     private int id;
     private String nombre;
+    private String apellidos;
     private String email;
     private Direccion direccion;
-    private List<MetodoPago> metodosPago;
+    private MetodoPago metodoPago;
 
-    public Usuario() {
-    }
-
-    public Usuario(int id, String nombre, String email, Direccion direccion, List<MetodoPago> metodosPago) {
+    public Usuario(int id, String nombre, String apellidos, String email, Direccion direccion, MetodoPago metodoPago) {
         this.id = id;
         this.nombre = nombre;
+        this.apellidos = apellidos;
         this.email = email;
         this.direccion = direccion;
-        this.metodosPago = metodosPago;
+        this.metodoPago = metodoPago;
     }
 
+    // Getters y setters
     public int getId() {
         return id;
     }
@@ -35,6 +34,10 @@ public class Usuario {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
+    public String getApellidos() { return apellidos; }
+
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
     public String getEmail() {
         return email;
@@ -52,22 +55,11 @@ public class Usuario {
         this.direccion = direccion;
     }
 
-    public List<MetodoPago> getMetodosPago() {
-        return metodosPago;
+    public MetodoPago getMetodoPago() {
+        return metodoPago;
     }
 
-    public void setMetodosPago(List<MetodoPago> metodosPago) {
-        this.metodosPago = metodosPago;
-    }
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", email='" + email + '\'' +
-                ", direccion=" + direccion +
-                ", metodosPago=" + metodosPago +
-                '}';
+    public void setMetodoPago(MetodoPago metodoPago) {
+        this.metodoPago = metodoPago;
     }
 }

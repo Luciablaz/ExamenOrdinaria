@@ -1,59 +1,88 @@
 package org.vaadin.example;
 
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 
-/**
- * A sample Vaadin view class.
- * <p>
- * To implement a Vaadin view just extend any Vaadin component and use @Route
- * annotation to announce it in a URL as a Spring managed bean.
- * <p>
- * A new instance of this class is created for every new user and every browser
- * tab/window.
- * <p>
- * The main view contains a text field for getting the user name and a button
- * that shows a greeting message in a notification.
- */
-@Route
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+
+@Route("")
 public class MainView extends VerticalLayout {
 
-    /**
-     * Construct a new Vaadin view.
-     * <p>
-     * Build the initial UI state for the user accessing the application.
-     *
-     * @param service
-     *            The message service. Automatically injected Spring managed bean.
-     */
-    public MainView(GreetService service) {
+    private Grid<Usuario> grid = new Grid<>(Usuario.class);
 
-        // Use TextField for standard text input
-        TextField textField = new TextField("Your name");
-        textField.addClassName("bordered");
+    public MainView() {
+        setSizeFull();
+        configureGrid();
+        add(grid);
+        cargarUsuarios();
 
-        // Button click listeners can be defined as lambda expressions
-        Button button = new Button("Say hello", e -> {
-            add(new Paragraph(service.greet(textField.getValue())));
+        Button botonAñadir = new Button("Añadir usuario", e -> {
+            // Aquí se implementará un Dialog con formulario
+            Notification.show("Formulario de alta no implementado aún");
         });
 
-        // Theme variants give you predefined extra styles for components.
-        // Example: Primary button has a more prominent look.
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        Button botonPDF = new Button("Generar PDF", e -> generarPDF());
 
-        // You can specify keyboard shortcuts for buttons.
-        // Example: Pressing enter in this view clicks the Button.
-        button.addClickShortcut(Key.ENTER);
+        add(botonAñadir, botonPDF);
+    }
 
-        // Use custom CSS classes to apply styling. This is defined in
-        // styles.css.
-        addClassName("centered-content");
+    private void configureGrid() {
+        grid.setColumns("id", "nombre", "apellidos", "email");
+        grid.addComponentColumn(usuario -> new Button("Ver", e -> mostrarDialogo(usuario)))
+                .setHeader("Detalles");
+    }
 
-        add(textField, button);
+    private void cargarUsuarios() {
+        // Simulación: sustituir por llamada HTTP real
+        List<Usuario> usuarios = List.of(
+                new Usuario(1, "Ana", "López", "ana@example.com", new Direccion("Calle A", "Madrid", "28001"), new MetodoPago("Tarjeta", "1234")),
+                new Usuario(2, "Luis", "Gómez", "luis@example.com", new Direccion("Calle B", "Sevilla", "41001"), new MetodoPago("PayPal", "luis@email.com"))
+        );
+        grid.setItems(usuarios);
+    }
+
+    private void mostrarDialogo(Usuario usuario) {
+        Dialog dialog = new Dialog();
+
+        Paragraph contenido = new Paragraph(
+                "ID: " + usuario.getId() + "\n" +
+                        "Nombre: " + usuario.getNombre() + "\n" +
+                        "Apellidos: " + usuario.getApellidos() + "\n" +
+                        "Email: " + usuario.getEmail() + "\n" +
+                        "Dirección: " + usuario.getDireccion() + "\n" +
+                        "Método de pago: " + usuario.getMetodoPago()
+        );
+
+        dialog.add(contenido);
+        dialog.open();
+    }
+
+    private void generarPDF() {
+        try {
+            String url = "http://localhost:8080/api/pdf";
+            InputStream inputStream = new URL(url).openStream();
+
+            StreamResource resource = new StreamResource("usuarios.pdf", () -> inputStream);
+            Anchor anchor = new Anchor(resource, "Descargar PDF");
+            anchor.getElement().setAttribute("download", true);
+
+            Dialog dialog = new Dialog();
+            dialog.add(new Paragraph("Tu archivo está listo:"), anchor);
+            dialog.open();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Notification.show("Error al generar PDF");
+        }
     }
 }
