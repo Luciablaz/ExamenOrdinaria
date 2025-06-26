@@ -27,8 +27,11 @@ public class MainView extends VerticalLayout {
         cargarUsuarios();
 
         Button botonAñadir = new Button("Añadir usuario", e -> {
-            // Aquí se implementará un Dialog con formulario
-            Notification.show("Formulario de alta no implementado aún");
+            UsuarioForm formulario = new UsuarioForm(() -> {
+                /* callback: recarga la tabla con los datos del backend */
+                cargarUsuarios();
+            });
+            formulario.open();
         });
 
         Button botonPDF = new Button("Generar PDF", e -> generarPDF());
